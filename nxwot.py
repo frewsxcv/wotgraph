@@ -1,3 +1,4 @@
+import argparse
 import bz2
 import io
 import sys
@@ -46,13 +47,33 @@ def get_files(wot_file):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) < 2:
-        wot_file = latest_wot()
+    parser = argparse.ArgumentParser(description="Generate web of trust graph")
+    parser.add_argument(
+        "-w", "--wot",
+        dest="wot_filename",
+        help="use local .wot file",
+    )
+    parser.add_argument(
+        "-f", "--format",
+        choices=["gexf", "graphml", "yaml"],
+        dest="file_format",
+        default="gexf",
+        help="specify file format of outputted graph",
+    )
+    args = parser.parse_args()
+
+    if args.wot_filename:
+        wot_file = open(args.wot_filename, "rb")
     else:
-        filename = sys.argv[1]
-        wot_file = open(filename, "rb")
+        wot_file = latest_wot()
 
     files = get_files(wot_file)
 
     G = read_wot(files["keys"], files["names"], files["signatures"])
-    nx.write_gexf(G, "wot.gexf")
+
+    if args.file_format == "gexf":
+        nx.write_gexf(G, "wot.gexf")
+    elif args.file_format == "graphml":
+        nx.write_graphml(G, "wot.graphml")
+    elif args.file_format == "yaml":
+        nx.write_yaml(G, "wot.yaml")
