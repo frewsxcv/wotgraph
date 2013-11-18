@@ -1,12 +1,19 @@
 import bz2
 import sys
+import networkx as nx
 
-def parse_nodes(g, keysfile, namesfile):
+def read_nodes(G, keysfile, namesfile):
     while True:
-        g.add_node(keyid, name=name)
+        G.add_node(keyid, name=name)
 
-def parse_edges(g, sigfile):
+def read_edges(G, sigsfile):
     raise NotImplementedError
+
+def read_graph(keysfile, namesfile, sigsfile):
+    G = nx.MultiDiGraph()
+    read_nodes(G, keysfile, namesfile)
+    read_edges(G, sigsfile)
+    return G
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
