@@ -1,5 +1,7 @@
 import bz2
+import io
 import sys
+import urllib.request
 import networkx as nx
 import arpy
 
@@ -19,10 +21,15 @@ def read_wot(keysfile, namesfile, sigsfile):
     return G
 
 
-def get_files(wot_filename):
+def latest_wot():
+    url = "http://wot.christoph-egger.org/download/latest.wot"
+    return urllib.request.urlopen(url)
+
+
+def get_files(wot_file):
     wot_files = {}
 
-    with bz2.BZ2File(wot_filename) as wot_ar:
+    with bz2.BZ2File(wot_file) as wot_ar:
         wot_archive = arpy.Archive(fileobj=wot_ar)
         for f in wot_archive:
             filename = f.header.name.decode()
@@ -31,9 +38,11 @@ def get_files(wot_filename):
     return wot_files
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        sys.stderr.write("nxwot.py <WOT file>\n")
-        sys.exit(1)
 
-    filename = sys.argv[1]
-    files = get_files(filename)
+    if len(sys.argv) < 2:
+        wot_file = latest_wot()
+    else:
+        filename = sys.argv[1]
+        wot_file = open(filename, "rb")
+
+    files = get_files(wot_file)
