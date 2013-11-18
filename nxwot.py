@@ -8,11 +8,23 @@ import arpy
 def read_wot(keysfile, namesfile, sigsfile):
     G = nx.MultiDiGraph()
 
-    names = namesfile.split("\n")
-    keys = [int.from_bytes(keysfile[i:i+4], byteorder='big')
-            for i in range(0, len(keysfile), 4)]
-    for n, k in zip(names, keys):
-        G.add_node(k, name=n)
+    keys = list()
+    while True:
+        name = namesfile.readline()
+        if not name:
+            break
+
+        keyid = int.from_bytes(keysfile.read(4), byteorder='big')
+        keys.append(keyid)
+        G.add_node(keyid, name=name)
+
+        numsigs = int.from_bytes(sigsfile.read(4), byteorder='big')
+        for i in range(numsigs):
+            signer_index = int.from_bytes(sigsfile.read(4), byteorder='big')
+            signer_index = signer_index & 0x0FFFFFFF
+            signer = keys[signer_index]
+            G.add_edge(signer, keyid)
+
 
     #G.add_edge(signer, owner)
 
