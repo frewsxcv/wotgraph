@@ -31,7 +31,8 @@ def get_files(wot_file):
         wot_archive = arpy.Archive(fileobj=wot_ar)
         for f in wot_archive:
             filename = f.header.name.decode()
-            wot_files[filename] = f.read()
+            ret = io.BytesIO(f.read())
+            wot_files[filename] = ret
 
     return wot_files
 
