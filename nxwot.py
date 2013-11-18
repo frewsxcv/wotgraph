@@ -2,8 +2,10 @@ import bz2
 import io
 import sys
 import urllib.request
+
 import networkx as nx
 import arpy
+
 
 def read_wot(keysfile, namesfile, sigsfile):
     G = nx.MultiDiGraph()
