@@ -1,7 +1,6 @@
 import argparse
 import bz2
 import io
-import sys
 import urllib.request
 
 import networkx as nx
