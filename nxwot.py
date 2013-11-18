@@ -2,17 +2,19 @@ import bz2
 import sys
 import networkx as nx
 
-def read_nodes(G, keysfile, namesfile):
+def read_wot(keysfile, namesfile, sigsfile):
+    G = nx.MultiDiGraph()
+
     while True:
+        keysfile.read(4)
+        name = namesfile.readline()
+        if not keyid or not name:
+            break
         G.add_node(keyid, name=name)
 
-def read_edges(G, sigsfile):
-    raise NotImplementedError
+    while False:
+        G.add_edge(signer, owner)
 
-def read_graph(keysfile, namesfile, sigsfile):
-    G = nx.MultiDiGraph()
-    read_nodes(G, keysfile, namesfile)
-    read_edges(G, sigsfile)
     return G
 
 if __name__ == "__main__":
