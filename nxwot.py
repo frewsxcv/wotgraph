@@ -33,7 +33,7 @@ def latest_wot():
     return urllib.request.urlopen(url)
 
 
-def get_files(wot_file):
+def extract_wot(wot_file):
     wot_files = {}
 
     with bz2.BZ2File(wot_file) as wot_ar:
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     else:
         wot_file = latest_wot()
 
-    files = get_files(wot_file)
+    files = extract_wot(wot_file)
 
     G = read_wot(files["keys"], files["names"], files["signatures"])
 
