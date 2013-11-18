@@ -59,6 +59,10 @@ if __name__ == "__main__":
         default="gexf",
         help="specify file format of outputted graph",
     )
+    parser.add_argument(
+        "-o", "--output",
+        help="output filename",
+    )
     args = parser.parse_args()
 
     if args.wot_filename:
@@ -70,9 +74,14 @@ if __name__ == "__main__":
 
     G = read_wot(files["keys"], files["names"], files["signatures"])
 
+    if args.output:
+        outfile = open(args.output, "wb")
+    else:
+        outfile = sys.stdout.buffer
+
     if args.file_format == "gexf":
-        nx.write_gexf(G, "wot.gexf")
+        nx.write_gexf(G, outfile)
     elif args.file_format == "graphml":
-        nx.write_graphml(G, "wot.graphml")
+        nx.write_graphml(G, outfile)
     elif args.file_format == "yaml":
-        nx.write_yaml(G, "wot.yaml")
+        nx.write_yaml(G, outfile)
