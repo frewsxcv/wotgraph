@@ -10,14 +10,14 @@ def read_wot(keysfile, namesfile, sigsfile):
 
     keys = list()
     for name in namesfile:
-        keyid = int.from_bytes(keysfile.read(4), byteorder='big')
+        keyid = int.from_bytes(keysfile.read(4), byteorder="big")
         keys.append(keyid)
-        G.add_node(keyid, name=name)
+        G.add_node(keyid, name=name.decode("utf-8", errors="replace"))
 
     for owner in keys:
-        numsigs = int.from_bytes(sigsfile.read(4), byteorder='big')
+        numsigs = int.from_bytes(sigsfile.read(4), byteorder="big")
         for i in range(numsigs):
-            signer_index = int.from_bytes(sigsfile.read(4), byteorder='big')
+            signer_index = int.from_bytes(sigsfile.read(4), byteorder="big")
             signer_index = signer_index & 0x0FFFFFFF
             signer = keys[signer_index]
             G.add_edge(signer, owner)
