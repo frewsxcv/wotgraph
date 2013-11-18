@@ -51,3 +51,6 @@ if __name__ == "__main__":
         wot_file = open(filename, "rb")
 
     files = get_files(wot_file)
+
+    G = read_wot(files["keys"], files["names"], files["signatures"])
+    nx.write_gexf(G, "wot.gexf")
