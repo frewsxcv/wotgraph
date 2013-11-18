@@ -22,10 +22,11 @@ def read_wot(keysfile, namesfile, sigsfile):
     for owner in keys:
         numsigs = int.from_bytes(sigsfile.read(4), byteorder="big")
         for i in range(numsigs):
-            signer_index = int.from_bytes(sigsfile.read(4), byteorder="big")
-            signer_index = signer_index & 0x0FFFFFFF
-            signer = keys[signer_index]
-            G.add_edge(signer, owner)
+            sig_info = int.from_bytes(sigsfile.read(4), byteorder="big")
+            signer = keys[sig_info & 0x0FFFFFFF]
+            primary = sig_info & 0x40000000 == 0x40000000
+            level = (sig_info & 0x30000000) >> 28
+            G.add_edge(signer, owner, primary=primary, level=level)
 
     return G
 
