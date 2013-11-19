@@ -26,7 +26,7 @@ def read_wot(keysfile, namesfile, sigsfile):
             signer = keys[sig_info & 0x0FFFFFFF]
             primary = sig_info & 0x40000000 == 0x40000000
             level = (sig_info & 0x30000000) >> 28
-            G.add_edge(signer, owner, primary=primary, level=level)
+            G.add_edge(signer, owner, primary_id=primary, cert_level=level)
 
     return G
 
