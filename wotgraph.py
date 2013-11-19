@@ -16,8 +16,10 @@ def read_wot(keysfile, namesfile, sigsfile):
     keys = list()
     for name in namesfile:
         keyid = int.from_bytes(keysfile.read(4), byteorder="big")
+        keyid = "{0:X}".format(keyid)
         keys.append(keyid)
-        G.add_node(keyid, name=name.decode("utf-8", errors="replace"))
+        name = name.decode("utf-8", errors="replace").strip()
+        G.add_node(keyid, label=name)
 
     for owner in keys:
         numsigs = int.from_bytes(sigsfile.read(4), byteorder="big")
