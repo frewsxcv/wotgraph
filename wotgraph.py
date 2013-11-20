@@ -5,6 +5,7 @@ import bz2
 import io
 import sys
 import urllib.request
+import logging
 
 import networkx as nx
 import arpy
@@ -20,6 +21,7 @@ def read_wot(keysfile, namesfile, sigsfile):
         keys.append(keyid)
         name = name.decode("utf-8", errors="replace").strip()
         G.add_node(keyid, label=name)
+        logging.debug("pub {0}".format(keyid))
 
     for owner in keys:
         numsigs = int.from_bytes(sigsfile.read(4), byteorder="big")
@@ -28,6 +30,7 @@ def read_wot(keysfile, namesfile, sigsfile):
             signer = keys[sig_info & 0x0FFFFFFF]
             primary = sig_info & 0x40000000 == 0x40000000
             level = (sig_info & 0x30000000) >> 28
+            logging.debug("sig by {0} on {1}".format(signer, owner))
             G.add_edge(signer, owner, primary_id=primary, cert_level=level)
 
     return G
@@ -85,23 +88,37 @@ if __name__ == "__main__":
         action="store_true",
         help="only keep mutually signed signatures",
     )
+    parser.add_argument(
+        "-v", "--verbose",
+        action="count",
+        default=0,
+        help="print progress information",
+    )
     args = parser.parse_args()
+
+    logging.basicConfig(format="%(levelname)s: %(message)s",
+                        level=['WARNING', 'INFO', 'DEBUG'][args.verbose])
 
     if args.wot_filename:
         wot_file = open(args.wot_filename, "rb")
     else:
+        logging.info("Retrieving wot file...")
         wot_file = latest_wot()
 
+    logging.info("Decompressing archive...")
     files = extract_wot(wot_file)
 
+    logging.info("Parsing files...")
     G = read_wot(files["keys"], files["names"], files["signatures"])
 
+    logging.info("Filtering...")
     if args.mutual:
         G = G.to_undirected(reciprocal=True)
 
     if args.key:
         G = nx.ego_graph(G, args.key, radius=args.radius, undirected=True)
 
+    logging.info("Writing output file...")
     if args.output:
         outfile = open(args.output, "wb")
     else:
