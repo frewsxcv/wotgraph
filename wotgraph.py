@@ -9,9 +9,11 @@ one at http://mozilla.org/MPL/2.0/.
 import argparse
 import bz2
 import io
+import functools
 import sys
 import urllib.request
 import logging
+from multiprocessing import Pool
 
 import networkx as nx
 import arpy
@@ -110,6 +112,11 @@ if __name__ == "__main__":
         default=0,
         help="print progress information",
     )
+    parser.add_argument(
+        "--msd",
+        action="store_true",
+        help="calculate MSD for each node",
+    )
     args = parser.parse_args()
 
     logging.basicConfig(format="%(levelname)s: %(message)s",
@@ -132,6 +139,15 @@ if __name__ == "__main__":
     G = read_wot(files["keys"], files["names"], files["signatures"])
     logging.info("Read {0} keys, {1} signatures".format(nx.number_of_nodes(G),
                                                         nx.number_of_edges(G)))
+
+    if args.msd:
+        logging.info("Calculating MSD...")
+        G.reverse()
+        with Pool(processes=400) as pool:
+            H = functools.partial(nx.centrality.closeness_centrality, G)
+            result = pool.map_async(H, G.nodes())
+            print(result.get())
+        G.reverse()
 
     logging.info("Filtering...")
     if args.mutual:
