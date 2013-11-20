@@ -110,6 +110,8 @@ if __name__ == "__main__":
 
     logging.info("Parsing files...")
     G = read_wot(files["keys"], files["names"], files["signatures"])
+    logging.info("Read {0} keys, {1} signatures".format(nx.number_of_nodes(G),
+                                                        nx.number_of_edges(G)))
 
     logging.info("Filtering...")
     if args.mutual:
