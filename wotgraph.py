@@ -69,6 +69,11 @@ if __name__ == "__main__":
         "-o", "--output",
         help="output filename",
     )
+    parser.add_argument(
+        "-m", "--mutual",
+        action="store_true",
+        help="only keep mutually signed signatures",
+    )
     args = parser.parse_args()
 
     if args.wot_filename:
@@ -79,6 +84,9 @@ if __name__ == "__main__":
     files = extract_wot(wot_file)
 
     G = read_wot(files["keys"], files["names"], files["signatures"])
+
+    if args.mutual:
+        G = G.to_undirected(reciprocal=True)
 
     if args.output:
         outfile = open(args.output, "wb")
