@@ -18,11 +18,15 @@ import arpy
 
 
 def read_wot(keysfile, namesfile, sigsfile):
+
+    def read_int32(f):
+        return int.from_bytes(f.read(4), byteorder="big")
+
     G = nx.DiGraph()
 
     keys = list()
     for name in namesfile:
-        keyid = int.from_bytes(keysfile.read(4), byteorder="big")
+        keyid = read_int32(keysfile)
         keyid = "{0:08X}".format(keyid)
         keys.append(keyid)
         name = name.decode("utf-8", errors="replace").strip()
@@ -30,9 +34,9 @@ def read_wot(keysfile, namesfile, sigsfile):
         logging.debug("pub {0}".format(keyid))
 
     for owner in keys:
-        numsigs = int.from_bytes(sigsfile.read(4), byteorder="big")
+        numsigs = read_int32(sigsfile)
         for i in range(numsigs):
-            sig_info = int.from_bytes(sigsfile.read(4), byteorder="big")
+            sig_info = read_int32(sigsfile)
             signer = keys[sig_info & 0x0FFFFFFF]
             primary = sig_info & 0x40000000 == 0x40000000
             level = (sig_info & 0x30000000) >> 28
