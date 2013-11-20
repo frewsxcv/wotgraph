@@ -59,6 +59,17 @@ if __name__ == "__main__":
         help="use local .wot file",
     )
     parser.add_argument(
+        "-k", "--key",
+        type=str.upper,
+        help="central key for ego network",
+    )
+    parser.add_argument(
+        "-r", "--radius",
+        default=3,
+        type=int,
+        help="radius of ego network",
+    )
+    parser.add_argument(
         "-f", "--format",
         choices=["gexf", "graphml", "yaml"],
         dest="file_format",
@@ -87,6 +98,9 @@ if __name__ == "__main__":
 
     if args.mutual:
         G = G.to_undirected(reciprocal=True)
+
+    if args.key:
+        G = nx.ego_graph(G, args.key, radius=args.radius, undirected=True)
 
     if args.output:
         outfile = open(args.output, "wb")
