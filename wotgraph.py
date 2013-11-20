@@ -17,16 +17,25 @@ import networkx as nx
 import arpy
 
 
-def read_wot(keysfile, namesfile, sigsfile):
+def read_wot(wot_file):
 
     def read_int32(f):
         return int.from_bytes(f.read(4), byteorder="big")
 
+    files = {}
+
+    decompressed = bz2.decompress(wot_file.read())
+    extracted = arpy.Archive(fileobj=io.BytesIO(decompressed))
+    for file_ in extracted:
+        filename = file_.header.name.decode()
+        contents = io.BytesIO(file_.read())
+        files[filename] = contents
+
     G = nx.DiGraph()
 
     keys = list()
-    for name in namesfile:
-        keyid = read_int32(keysfile)
+    for name in files["names"]:
+        keyid = read_int32(files["keys"])
         keyid = "{0:08X}".format(keyid)
         keys.append(keyid)
         name = name.decode("utf-8", errors="replace").strip()
@@ -34,9 +43,9 @@ def read_wot(keysfile, namesfile, sigsfile):
         logging.debug("pub {0}".format(keyid))
 
     for owner in keys:
-        numsigs = read_int32(sigsfile)
+        numsigs = read_int32(files["signatures"])
         for i in range(numsigs):
-            sig_info = read_int32(sigsfile)
+            sig_info = read_int32(files["signatures"])
             signer = keys[sig_info & 0x0FFFFFFF]
             primary = sig_info & 0x40000000 == 0x40000000
             level = (sig_info & 0x30000000) >> 28
@@ -50,19 +59,6 @@ def latest_wot():
     logging.info("Retrieving wot file...")
     url = "http://wot.christoph-egger.org/download/latest.wot"
     return urllib.request.urlopen(url)
-
-
-def extract_wot(wot_file):
-    files = {}
-
-    decompressed = bz2.decompress(wot_file.read())
-    extracted = arpy.Archive(fileobj=io.BytesIO(decompressed))
-    for file_ in extracted:
-        filename = file_.header.name.decode()
-        contents = io.BytesIO(file_.read())
-        files[filename] = contents
-
-    return files
 
 if __name__ == "__main__":
 
@@ -125,11 +121,8 @@ if __name__ == "__main__":
     else:
         wot_file = latest_wot()
 
-    logging.info("Decompressing archive...")
-    files = extract_wot(wot_file)
-
     logging.info("Parsing files...")
-    G = read_wot(files["keys"], files["names"], files["signatures"])
+    G = read_wot(wot_file)
     logging.info("Read {0} keys, {1} signatures".format(nx.number_of_nodes(G),
                                                         nx.number_of_edges(G)))
 
