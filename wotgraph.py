@@ -37,6 +37,7 @@ def read_wot(keysfile, namesfile, sigsfile):
 
 
 def latest_wot():
+    logging.info("Retrieving wot file...")
     url = "http://wot.christoph-egger.org/download/latest.wot"
     return urllib.request.urlopen(url)
 
@@ -57,9 +58,9 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Generate web of trust graph")
     parser.add_argument(
-        "-w", "--wot",
-        dest="wot_filename",
-        help="use local .wot file",
+        "wot_file",
+        nargs="?",
+        help=".wot file",
     )
     parser.add_argument(
         "-k", "--key",
@@ -78,6 +79,11 @@ if __name__ == "__main__":
         dest="file_format",
         default="gexf",
         help="specify file format of outputted graph",
+    )
+    parser.add_argument(
+        "-s", "--save",
+        action="store_true",
+        help="download latest .wot file to given filename",
     )
     parser.add_argument(
         "-o", "--output",
@@ -99,10 +105,14 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(levelname)s: %(message)s",
                         level=['WARNING', 'INFO', 'DEBUG'][args.verbose])
 
-    if args.wot_filename:
-        wot_file = open(args.wot_filename, "rb")
+    if args.wot_file:
+        if args.save:
+            wot_file = open(args.wot_file, "w+b")
+            wot_file.write(latest_wot().read())
+            wot_file.seek(0)
+        else:
+            wot_file = open(args.wot_file, "rb")
     else:
-        logging.info("Retrieving wot file...")
         wot_file = latest_wot()
 
     logging.info("Decompressing archive...")
