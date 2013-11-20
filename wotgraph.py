@@ -60,11 +60,13 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "-k", "--key",
+        type=str.upper,
         help="central key for ego network",
     )
     parser.add_argument(
         "-r", "--radius",
         default=3,
+        type=int,
         help="radius of ego network",
     )
     parser.add_argument(
@@ -98,8 +100,7 @@ if __name__ == "__main__":
         G = G.to_undirected(reciprocal=True)
 
     if args.key:
-        G = nx.ego_graph(G, args.key.upper(), radius=args.radius,
-                         undirected=True)
+        G = nx.ego_graph(G, args.key, radius=args.radius, undirected=True)
 
     if args.output:
         outfile = open(args.output, "wb")
