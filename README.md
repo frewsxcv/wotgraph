@@ -4,4 +4,4 @@ Converts PGP web of trust [.wot files](http://www.lysator.liu.se/~jc/wotsap/) to
 
 License
 -------
-wotgraph is licensed under the [Mozilla Public License, version 2](/LICENSE.md)
+Copyright 2013 [Corey Ford](http://github.com/coyotebush) and [Corey Farwell](http://github.com/frewsxcv). wotgraph is licensed under the [Mozilla Public License, version 2](/LICENSE.md).
