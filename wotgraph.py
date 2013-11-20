@@ -143,10 +143,10 @@ if __name__ == "__main__":
     if args.msd:
         logging.info("Calculating MSD...")
         G.reverse()
-        with Pool() as pool:
-            H = functools.partial(nx.centrality.closeness_centrality, G)
-            result = pool.map_async(H, G.nodes())
-            print(result.get())
+        pool = Pool()
+        H = functools.partial(nx.centrality.closeness_centrality, G)
+        result = pool.map_async(H, G.nodes())
+        print(result.get())
         G.reverse()
 
     logging.info("Filtering...")
