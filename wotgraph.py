@@ -11,7 +11,7 @@ import arpy
 
 
 def read_wot(keysfile, namesfile, sigsfile):
-    G = nx.MultiDiGraph()
+    G = nx.DiGraph()
 
     keys = list()
     for name in namesfile:
