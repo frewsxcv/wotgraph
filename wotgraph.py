@@ -147,9 +147,10 @@ if __name__ == "__main__":
 
         pool = Pool()
         cc_partial = functools.partial(nx.closeness_centrality, G)
-        msds = pool.map_async(cc_partial, nodes).get()
+        results = pool.map_async(cc_partial, nodes).get()
         pool.terminate()
 
+        msds = (1/r for r in results)
         nx.set_node_attributes(G, "msd", zip(nodes, msds))
         G.reverse()
 
