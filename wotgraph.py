@@ -151,7 +151,7 @@ if __name__ == "__main__":
         pool.terminate()
 
         msds = (1/r for r in results)
-        nx.set_node_attributes(G, "msd", zip(nodes, msds))
+        nx.set_node_attributes(G, "msd", dict(zip(nodes, msds)))
         G.reverse()
 
     logging.info("Filtering...")
