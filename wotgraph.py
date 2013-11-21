@@ -136,6 +136,7 @@ if __name__ == "__main__":
     logging.info("Filtering...")
     if args.mutual:
         G = G.to_undirected(reciprocal=True)
+        G = nx.connected_component_subgraphs(G)[0]
 
     if args.key:
         G = nx.ego_graph(G, args.key, radius=args.radius, undirected=True)
