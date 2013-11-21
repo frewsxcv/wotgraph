@@ -53,16 +53,16 @@ def latest_wot():
 
 
 def extract_wot(wot_file):
-    wot_files = {}
+    files = {}
 
-    wot_ar = bz2.decompress(wot_file.read())
-    wot_archive = arpy.Archive(fileobj=io.BytesIO(wot_ar))
-    for f in wot_archive:
-        filename = f.header.name.decode()
-        contents = io.BytesIO(f.read())
-        wot_files[filename] = contents
+    decompressed = bz2.decompress(wot_file.read())
+    extracted = arpy.Archive(fileobj=io.BytesIO(decompressed))
+    for file_ in extracted:
+        filename = file_.header.name.decode()
+        contents = io.BytesIO(file_.read())
+        files[filename] = contents
 
-    return wot_files
+    return files
 
 if __name__ == "__main__":
 
