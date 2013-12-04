@@ -10,7 +10,7 @@ import argparse
 import bz2
 import io
 import sys
-import urllib.request
+import urllib2
 import logging
 
 import networkx as nx
@@ -58,7 +58,7 @@ def read_wot(wot_file):
 def latest_wot():
     logging.info("Retrieving wot file...")
     url = "http://wot.christoph-egger.org/download/latest.wot"
-    return urllib.request.urlopen(url)
+    return urllib2.urlopen(url)
 
 if __name__ == "__main__":
 
