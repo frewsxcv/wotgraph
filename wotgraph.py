@@ -12,6 +12,7 @@ import io
 import sys
 import urllib2
 import logging
+import struct
 
 import networkx as nx
 import arpy
@@ -20,7 +21,7 @@ import arpy
 def read_wot(wot_file):
 
     def read_int32(f):
-        return int.from_bytes(f.read(4), byteorder="big")
+        return struct.unpack(">L", f.read(4))[0]
 
     files = {}
 
