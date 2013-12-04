@@ -139,7 +139,7 @@ if __name__ == "__main__":
     if args.output:
         outfile = open(args.output, "wb")
     else:
-        outfile = sys.stdout.buffer
+        outfile = sys.stdout
 
     if args.file_format == "gexf":
         nx.write_gexf(G, outfile)
